@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
+import styles from '../styles/Login.module.css';
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -24,46 +26,57 @@ const Login: React.FC = () => {
         throw new Error(data.message || 'Login failed');
       }
 
-      console.log('Login successful:', data);
-
-      // Store the token in localStorage
       localStorage.setItem('token', data.token);
-
-      // Navigate to the dashboard page after successful login
       router.push('/dashboard');
     } catch (error: any) {
-      console.error('Error:', error);
-      setError(error.message || 'Login failed. Please check your credentials and try again.');
+      setError(error.message || 'Giriş başarısız. Lütfen bilgilerinizi kontrol edin.');
     }
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Username:</label>
-          <input
-            type="text"
-            name="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
+    <div className={styles.container}>
+      <div className={styles.topLine}></div>
+      <header className={styles.header}>
+        <div className={styles.logo}>Randevu Yönetim</div>
+        <nav className={styles.nav}>
+          <Link href="/" legacyBehavior>
+            <a className={styles.navButton}>Ana Sayfa</a>
+          </Link>
+          <Link href="/register" legacyBehavior>
+            <a className={styles.navButton}>Kayıt Ol</a>
+          </Link>
+        </nav>
+      </header>
+      <main className={styles.mainContent}>
+        <div className={styles.formContainer}>
+          <h2>Giriş Yap</h2>
+          {error && <div className={styles.error}>{error}</div>}
+          <form onSubmit={handleSubmit} className={styles.form}>
+            <div className={styles.inputGroup}>
+              <label>Kullanıcı Adı</label>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            </div>
+            <div className={styles.inputGroup}>
+              <label>Şifre</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            <button type="submit" className={styles.submitButton}>
+              Giriş Yap
+            </button>
+          </form>
         </div>
-        <div>
-          <label>Password:</label>
-          <input
-            type="password"
-            name="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        <button type="submit">Login</button>
-      </form>
+      </main>
+      <div className={styles.dynamicShape}></div>
     </div>
   );
 };

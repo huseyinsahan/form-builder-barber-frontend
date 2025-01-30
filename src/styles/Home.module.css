@@ -1,10 +1,165 @@
 .container {
   padding: 2rem;
   text-align: center;
+  background: linear-gradient(135deg, #F5F5F5 0%, #FFFFFF 100%);
 }
 
-.link {
-  color: blue;
-  text-decoration: underline;
+.topLine {
+  height: 3px;
+  width: 100%;
+  background: linear-gradient(90deg, #6A0DAD 0%, #9B4DCA 100%);
+  box-shadow: 0 2px 4px rgba(106, 13, 173, 0.1);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 0;
+  border-bottom: 2px solid transparent;
+  background-image: linear-gradient(90deg, #6A0DAD 0%, #9B4DCA 100%);
+  background-size: 100% 2px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: all 0.3s ease;
+}
+
+.logo {
+  font-size: 1.8rem;
+  color: #343A40;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  transform: translateY(-2px);
+}
+
+.nav {
+  display: flex;
+  gap: 1.5rem;
+  margin-right: 40px;
+}
+
+.navButton {
+  background-color: #343A40;
+  color: #FFFFFF;
+  border: none;
+  padding: 0.7rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.navButton:hover {
+  background-color: #FFC107;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(106, 13, 173, 0.2);
+}
+
+.navButton::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 150%;
+  height: 150%;
+  background: rgba(255, 255, 255, 0.1);
+  transform: translate(-50%, -50%) scale(0);
+  border-radius: 50%;
+  transition: transform 0.4s ease;
+}
+
+.navButton:hover::after {
+  transform: translate(-50%, -50%) scale(1);
+}
+.mainContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem;
+  background-color: #F5F5F5; /* Light Gray background */
+}
+
+.mainMessage {
+  text-align: left;
+  max-width: 50%;
+}
+
+.mainMessage h2 {
+  font-size: 2rem;
+  color: #343A40; /* Dark Gray text */
+}
+
+.mainMessage p {
+  font-size: 1.2rem;
+  color: #343A40; /* Dark Gray text */
+}
+
+.ctaButton {
+  display: inline-block;
+  background-color: #6A0DAD; /* Primary Purple */
+  color: #FFFFFF; /* White text */
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 1rem;
   cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 1rem;
+}
+
+.ctaButton:hover {
+  background-color: #4B0082; /* Darker Purple */
+}
+
+.boxContainer {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  margin-top: 8rem;  /* Increased top margin */
+  margin-bottom: 2rem;
+  gap: 70px;
+  position: relative;
+}
+
+.boxContainer::before {
+  content: "Nasıl çalışır?";
+  position: absolute;
+  top: -45px;
+  left: 0;
+  color: #343A40;
+  font-size: 2rem;
+  font-weight: bold;
+}
+.box {
+  width: 300px;
+  height: 500px;
+  border: 3px solid #6A0DAD;
+  border-radius: 15px;
+  background-color: #F5F5F5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.box h3 {
+  margin: 0;
+  color: #6A0DAD; /* Primary Purple */
+}
+
+.dynamicShape {
+  width: 100%;
+  height: 100px;
+  background-color: #FFC107;
+  clip-path: polygon(0 100%, 100% 100%, 100% 0, 0 50%);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
 }

@@ -1,0 +1,143 @@
+.container {
+    padding: 2rem;
+    text-align: center;
+    background: linear-gradient(135deg, #F5F5F5 0%, #FFFFFF 100%);
+    min-height: 100vh;
+  }
+  
+  .topLine {
+    height: 3px;
+    width: 100%;
+    background: linear-gradient(90deg, #6A0DAD 0%, #9B4DCA 100%);
+    box-shadow: 0 2px 4px rgba(106, 13, 173, 0.1);
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 0;
+    border-bottom: 2px solid transparent;
+    background-image: linear-gradient(90deg, #6A0DAD 0%, #9B4DCA 100%);
+    background-size: 100% 2px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition: all 0.3s ease;
+  }
+  
+  .logo {
+    font-size: 1.8rem;
+    color: #343A40;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    transition: transform 0.3s ease;
+  }
+  
+  .nav {
+    display: flex;
+    gap: 1.5rem;
+    margin-right: 40px;
+  }
+  
+  .navButton {
+    background-color: #343A40;
+    color: #FFFFFF;
+    border: none;
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .navButton:hover {
+    background-color: #6A0DAD;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(106, 13, 173, 0.2);
+  }
+  
+  .mainContent {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 200px);
+  }
+  
+  .formContainer {
+    background: #FFFFFF;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .inputGroup {
+    text-align: left;
+  }
+  
+  .inputGroup label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #343A40;
+    font-weight: 500;
+  }
+  
+  .inputGroup input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #E9ECEF;
+    border-radius: 8px;
+    transition: border-color 0.3s ease;
+  }
+  
+  .inputGroup input:focus {
+    outline: none;
+    border-color: #6A0DAD;
+  }
+  
+  .submitButton {
+    background-color: #6A0DAD;
+    color: #FFFFFF;
+    border: none;
+    padding: 1rem;
+    border-radius: 8px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .submitButton:hover {
+    background-color: #4B0082;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(106, 13, 173, 0.2);
+  }
+  
+  .dynamicShape {
+    width: 100%;
+    height: 100px;
+    background-color: #FFC107;
+    clip-path: polygon(0 100%, 100% 100%, 100% 0, 0 50%);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: -1;
+  }
+  
+  @media (max-width: 768px) {
+    .formContainer {
+      margin: 1rem;
+    }
+    
+    .nav {
+      margin-right: 20px;
+    }
+  }

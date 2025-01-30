@@ -13,17 +13,8 @@
     "react-dom": "latest"
   },
   "devDependencies": {
-<<<<<<< HEAD
     "typescript": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest"
   }
 }
-=======
-    "@types/node": "22.10.10",
-    "@types/react": "latest",
-    "@types/react-dom": "latest",
-    "typescript": "latest"
-  }
-}
->>>>>>> be567f1 (Initial commit with updated .gitignore)

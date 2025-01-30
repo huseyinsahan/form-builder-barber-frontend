@@ -4,33 +4,15 @@
   height: 100vh;
 }
 
-.sidebarToggle {
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-  background: none;
-  border: none;
-  font-size: 2rem;
-  cursor: pointer;
-  z-index: 1000;
-}
-
-.content {
-  display: flex;
-  flex: 1;
-}
-
 .main {
   flex: 1;
   padding: 1rem;
   overflow-y: auto;
+  background-color: #FFFDD0; /* Cream background */
+  color: #343A40; /* Dark Gray text */
 }
 
 @media (max-width: 768px) {
-  .content {
-    flex-direction: column;
-  }
-
   .main {
     padding: 0.5rem;
   }
