@@ -18,21 +18,24 @@ const Home: React.FC = () => {
         </nav>
       </header>
       <section className={styles.mainContent}>
-        <div className={styles.mainMessage}>
+      <div className={styles.mainMessage}>
+        <div className={styles.textContainer}>
           <h2>Randevu Yönetim Uygulamasına hoş geldiniz!</h2>
-          <p>Randevularınız için en ucuz ve kullanışlı yönetim uygulaması</p>
-          <Link href="/register" legacyBehavior>
-            <a className={styles.ctaButton}>Hemen Başla</a>
-          </Link>
+          <p>Telefonla konuşmaktan yorulmadınız mı? Müşterilerinizin uygun Randevuları direkt 
+            görebileceği bir websitesi mi arıyorsunuz? Özelleştirilebilir randevu toplama formu
+            ve bütün randevularınızı yönetebileceğiniz bir uygulama mı arıyorsunuz? İşte burada! 
+            Randevuyönetim.com, randevularınız için en ucuz ve kullanışlı yönetim uygulaması. </p>
         </div>
-        <section className={styles.boxContainer}>
-          <div className={styles.box}>
-          </div>
-          <div className={styles.box}></div>
-          <div className={styles.box}></div>
-        </section>
+        <Link href="/register" legacyBehavior>
+          <a className={styles.ctaButton}>Hemen Başla</a>
+        </Link>
+      </div>
+      </section>   
+      <section className={styles.boxContainer}>
+        <div className={styles.box}> </div>
+        <div className={styles.box}></div>
+        <div className={styles.box}></div>
       </section>
-      <div className={styles.dynamicShape}></div>
     </div>
   );
 };

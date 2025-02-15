@@ -23,10 +23,15 @@ const Login: React.FC = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Login failed');
+        const data = await response.json();
+        throw new Error(data.message || 'Giriş başarısız. Lütfen bilgilerinizi kontrol edin.');
       }
 
-      localStorage.setItem('token', data.token);
+      const { token } = data;
+      // Store token and username in localStorage
+      localStorage.setItem('token', token);
+      localStorage.setItem('username', username);
+      // Redirect to dashboard or another page
       router.push('/dashboard');
     } catch (error: any) {
       setError(error.message || 'Giriş başarısız. Lütfen bilgilerinizi kontrol edin.');
