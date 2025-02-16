@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
@@ -18,6 +18,45 @@ const Dashboard: React.FC = () => {
   const [view, setView] = useState('week');
   const [date, setDate] = useState(new Date());
 
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        router.push('/login');
+        return;
+      }
+
+      try {
+        console.log('Fetching appointments with token:', token);
+        const response = await fetch('https://form-builder-barber.onrender.com/dashboard/upcoming', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        console.log('Response status:', response.status);
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Fetched appointments:', data);
+          const formattedEvents = data.map((appointment: any) => ({
+            title: `${appointment.name} - ${appointment.barber}`,
+            start: new Date(`${appointment.appointment_date}T${appointment.appointment_time}`),
+            end: new Date(`${appointment.appointment_date}T${appointment.appointment_time}`),
+          }));
+          setEvents(formattedEvents);
+        } else {
+          console.error('Failed to fetch appointments');
+        }
+      } catch (error) {
+        console.error('Error fetching appointments:', error);
+      }
+    };
+
+    fetchAppointments();
+  }, []);
+
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
@@ -33,8 +72,10 @@ const Dashboard: React.FC = () => {
   const handleToday = () => {
     setDate(new Date());
   };
+
   const handleLogout = () => {
-    // Perform any logout logic here if needed
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
     router.push('/login');
   };
 
@@ -48,7 +89,7 @@ const Dashboard: React.FC = () => {
             <a className={styles.navLink}>Takvim</a>
           </Link>
           <Link href="/form" legacyBehavior>
-            <a className={styles.navLink}>Form Creation</a>
+            <a className={styles.navLink}>Form Oluştur</a>
           </Link>
           <a className={styles.navLink} onClick={handleLogout}>Çıkış yap</a>
         </nav>

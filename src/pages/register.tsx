@@ -33,7 +33,7 @@ const Register: React.FC = () => {
 
       router.push('/login');
     } catch (error) {
-      setError(error.message);
+      setError((error as any).message);
     } finally {
       setLoading(false);
     }
