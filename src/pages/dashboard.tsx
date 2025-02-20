@@ -5,6 +5,7 @@ import moment from 'moment';
 import 'moment/locale/tr'; // Import Turkish locale
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import router, { useRouter } from 'next/router';
+import Modal from 'react-modal';
 
 import CustomToolbar from '../components/CustomToolbar';
 import styles from '../styles/Dashboard.module.css';
@@ -17,6 +18,8 @@ const Dashboard: React.FC = () => {
   const [events, setEvents] = useState([]);
   const [view, setView] = useState('week');
   const [date, setDate] = useState(new Date());
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -28,23 +31,28 @@ const Dashboard: React.FC = () => {
 
       try {
         console.log('Fetching appointments with token:', token);
-        const response = await fetch('https://form-builder-barber.onrender.com/dashboard/upcoming', {
+        const response = await fetch('https://form-builder-barber.onrender.com/dashboard/appointments', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           }
         });
-
+          
         console.log('Response status:', response.status);
         if (response.ok) {
           const data = await response.json();
           console.log('Fetched appointments:', data);
-          const formattedEvents = data.map((appointment: any) => ({
-            title: `${appointment.name} - ${appointment.barber}`,
-            start: new Date(`${appointment.appointment_date}T${appointment.appointment_time}`),
-            end: new Date(`${appointment.appointment_date}T${appointment.appointment_time}`),
-          }));
+          const formattedEvents = data.appointments.map((appointment: any) => {
+            const start = new Date(`${appointment.appointment_date}T${appointment.appointment_time}`);
+            const end = new Date(start.getTime() + 30 * 60000); // Add 30 minutes to start time
+            return {
+              title: `${appointment.name} - ${appointment.barber}`,
+              start,
+              end,
+              ...appointment // Include all appointment details
+            };
+          });
           setEvents(formattedEvents);
         } else {
           console.error('Failed to fetch appointments');
@@ -77,6 +85,16 @@ const Dashboard: React.FC = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('username');
     router.push('/login');
+  };
+
+  const handleEventClick = (event: any) => {
+    setSelectedEvent(event);
+    setModalIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalIsOpen(false);
+    setSelectedEvent(null);
   };
 
   return (
@@ -118,8 +136,29 @@ const Dashboard: React.FC = () => {
             toolbar: CustomToolbar
           }}
           style={{ height: '100%' }}
+          onSelectEvent={handleEventClick}
         />
       </main>
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        contentLabel="Appointment Details"
+        ariaHideApp={false}
+        className={styles.modal}
+        overlayClassName={styles.overlay}
+      >
+        {selectedEvent && (
+          <div>
+            <h2>Randevu Detayı</h2>
+            <p><strong>İsim:</strong> {selectedEvent.name}</p>
+            <p><strong>Danışman:</strong> {selectedEvent.barber}</p>
+            <p><strong>Tarih:</strong> {selectedEvent.appointment_date}</p>
+            <p><strong>Saat:</strong> {selectedEvent.appointment_time}</p>
+            <p><strong>Telefon:</strong> {selectedEvent.phone}</p>
+            <button onClick={closeModal}>Kapat</button>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };

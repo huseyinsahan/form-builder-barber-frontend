@@ -13,7 +13,8 @@
     "react": "latest",
     "react-big-calendar": "^1.17.1",
     "react-calendar": "^5.1.0",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "react-modal": "^3.16.3"
   },
   "devDependencies": {
     "@types/node": "22.13.4",
