@@ -22,6 +22,7 @@
     "@types/react": "latest",
     "@types/react-big-calendar": "^1.16.1",
     "@types/react-dom": "latest",
+    "@types/react-modal": "^3.16.3",
     "typescript": "latest"
   }
 }

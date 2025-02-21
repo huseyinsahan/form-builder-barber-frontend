@@ -18,7 +18,17 @@ const Dashboard: React.FC = () => {
   const [events, setEvents] = useState([]);
   const [view, setView] = useState('week');
   const [date, setDate] = useState(new Date());
-  const [selectedEvent, setSelectedEvent] = useState(null);
+  
+  interface Appointment {
+    name: string;
+    barber: string;
+    appointment_date: string;
+    appointment_time: string;
+    phone: string;
+    [key: string]: any; // Add this line to include any other properties
+  }
+
+  const [selectedEvent, setSelectedEvent] = useState<Appointment | null>(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
 
   useEffect(() => {
