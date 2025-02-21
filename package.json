@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "vercel-build": "next build"
   },
   "dependencies": {
     "moment": "^2.30.1",
