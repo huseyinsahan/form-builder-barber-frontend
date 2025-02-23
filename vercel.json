@@ -7,7 +7,7 @@
     }
   ],
   "routes": [
-    { "src": "/styles/(.*)", "dest": "/styles/$1" },
+    { "src": "/(.*)", "dest": "/styles/$1" },
     { "src": "/scripts/(.*)", "dest": "/scripts/$1" },
     { "src": "/img/(.*)", "dest": "/img/$1" },
     { "src": "/(.*)", "dest": "/" }
