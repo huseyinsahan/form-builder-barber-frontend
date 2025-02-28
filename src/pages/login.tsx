@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import styles from '../styles/Login.module.css';
 
 const Login: React.FC = () => {
@@ -11,30 +11,16 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+
+    // Here you would add your login logic
     try {
-      const response = await fetch('https://form-builder-barber.onrender.com/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || 'Giriş başarısız. Lütfen bilgilerinizi kontrol edin.');
-      }
-
-      const { token } = data;
-      // Store token and username in localStorage
-      localStorage.setItem('token', token);
-      localStorage.setItem('username', username);
-      // Redirect to dashboard or another page
+      // Example login request
+      // const response = await login(username, password);
+      // If successful, redirect to dashboard
       router.push('/dashboard');
-    } catch (error: any) {
-      setError(error.message || 'Giriş başarısız. Lütfen bilgilerinizi kontrol edin.');
+    } catch (err) {
+      setError('Giriş başarısız. Lütfen kullanıcı adı ve şifrenizi kontrol edin.');
     }
   };
 
@@ -42,34 +28,39 @@ const Login: React.FC = () => {
     <div className={styles.container}>
       <div className={styles.topLine}></div>
       <header className={styles.header}>
-        <div className={styles.logo}>Randevu Yönetim</div>
+        <Link href="/" legacyBehavior>
+          <a className={styles.logo}>Randevu Formu</a>
+        </Link>
         <nav className={styles.nav}>
-          <Link href="/" legacyBehavior>
-            <a className={styles.navButton}>Ana Sayfa</a>
+          <Link href="/login" legacyBehavior>
+            <a className={`${styles.navButton} ${styles.activeNavButton}`}>Giriş Yap</a>
           </Link>
           <Link href="/register" legacyBehavior>
             <a className={styles.navButton}>Kayıt Ol</a>
           </Link>
         </nav>
       </header>
+
       <main className={styles.mainContent}>
         <div className={styles.formContainer}>
-          <h2>Giriş Yap</h2>
+          <h1 className={styles.formTitle}>Giriş Yap</h1>
           {error && <div className={styles.error}>{error}</div>}
-          <form onSubmit={handleSubmit} className={styles.form}>
+          <form className={styles.form} onSubmit={handleSubmit}>
             <div className={styles.inputGroup}>
-              <label>Kullanıcı Adı</label>
+              <label htmlFor="username">Kullanıcı Adı</label>
               <input
                 type="text"
+                id="username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
               />
             </div>
             <div className={styles.inputGroup}>
-              <label>Şifre</label>
+              <label htmlFor="password">Şifre</label>
               <input
                 type="password"
+                id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -79,9 +70,14 @@ const Login: React.FC = () => {
               Giriş Yap
             </button>
           </form>
+          <div className={styles.linkContainer}>
+            Hesabınız yok mu?{' '}
+            <Link href="/register" legacyBehavior>
+              <a className={styles.formLink}>Kayıt Ol</a>
+            </Link>
+          </div>
         </div>
       </main>
-      <div className={styles.dynamicShape}></div>
     </div>
   );
 };

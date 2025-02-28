@@ -7,6 +7,8 @@
   display: flex;
   flex-direction: column;
   overflow: auto;
+  position: relative; /* Make it a positioning context */
+
 }
 
 .topLine {
@@ -14,10 +16,15 @@
   width: 100%;
   background: linear-gradient(90deg, #6A0DAD 0%, #9B4DCA 100%);
   box-shadow: 0 2px 4px rgba(106, 13, 173, 0.1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
 }
 
 .header {
   display: flex;
+  position: fixed;
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem 20%;
@@ -25,6 +32,9 @@
   width: 100%;
   box-sizing: border-box;
   background-color: #F5F5F5;
+  top: 20px;
+  left: 0;
+  z-index: 999;
 }
 
 .logo {
@@ -87,89 +97,120 @@
 .mainContent {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  justify-items: flex-start;
-  padding: 2rem;
+  align-items: center; /* Changed from flex-start to center */
+  justify-content: center; /* Added justify-content center */
+  padding: 0rem;
   background-color: #F5F5F5;
   width: 100%;
-  margin: 0 auto;
   box-sizing: border-box;
+  margin-top: 120px;
+  text-align: center; /* Added text-align center */
 }
 
 .mainMessage {
   display: grid;
-  grid-template-columns: 2.5fr 1fr;
-  gap: 15rem;
+  grid-template-columns: 1fr; /* Changed from 2.5fr 1fr to 1fr for centering */
+  gap: 2rem; /* Reduced gap */
   align-items: center;
-  max-width: 50%;
+  justify-content: center; /* Added justify-content center */
+  width: 100%; /* Ensure it takes full width */
+  max-width: 800px; /* Adjusted max-width for better readability */
+  margin: 0 auto;
+  text-align: center; /* Added text-align center */
+}
+/* How It Works Section */
+.howItWorksSection {
+  width: 100%;
+  padding: 3rem 1rem;
+  background: linear-gradient(135deg, #f5f5f5 0%, #e6e6e6 100%);
+  margin-top: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(106, 13, 173, 0.1);
+}
+
+.howItWorksTitle {
+  font-size: 2.5rem;
+  color: #343A40;
+  margin-bottom: 3rem;
+  position: relative;
+  font-weight: 700;
+}
+
+.howItWorksTitle:after {
+  content: '';
+  position: absolute;
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #6A0DAD 0%, #9B4DCA 100%);
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 2px;
+}
+
+.stepsContainer {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
-.textContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  color: #343A40;
-  text-align: justify;
-  font-family: 'Nunito', sans-serif;
-  letter-spacing: -0.75px;
+.step {
+  flex: 1;
+  min-width: 250px;
+  max-width: 350px;
+  background: #FFFFFF;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-.textContainer h2,
-.textContainer p {
-  margin: 0;
+.step:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(106, 13, 173, 0.15);
 }
 
-.ctaButton {
-  padding: 1.2rem 2.5rem;
-  font-size: 1.2rem;
-  background-color: #6A0DAD;
-  color: #FFFFFF;
-  border: none;
-  border-radius: 8px;
-  text-decoration: none;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  white-space: nowrap;
-  text-align: center;
-}
-
-.ctaButton:hover {
-  background-color: #FFC107;
-}
-
-.boxContainer {
+.stepNumber {
+  position: absolute;
+  top: -15px;
+  right: -15px;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #6A0DAD 0%, #9B4DCA 100%);
+  border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 70px;
-  position: relative;
-  width: 100%;
-  background-color: #F5F5F5;
-  flex: 1;
-  box-sizing: border-box;
+  color: #FFFFFF;
+  font-size: 1.8rem;
+  font-weight: 700;
 }
 
-.boxContainer::before {
-  content: "Nasıl Çalışır?";
-  position: absolute;
-  top: 7px;
-  left: 16.5%;
+.stepIcon {
+  font-size: 3rem;
+  color: #6A0DAD;
+  margin-bottom: 1.2rem;
+}
+
+.stepTitle {
+  font-size: 1.4rem;
   color: #343A40;
-  font-size: 2rem;
+  margin-bottom: 1rem;
   font-weight: 600;
 }
 
-.box {
-  width: 370px;
-  height: 500px;
-  border: 2px solid #6A0DAD;
-  border-radius: 15px;
-  background-color: #F5F5F5;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.stepDescription {
+  color: #606060;
+  line-height: 1.6;
+  font-size: 1rem;
 }
+
+
 
 @media (max-width: 1200px) {
   .header {
@@ -200,33 +241,21 @@
   .mainContent {
     padding: 1rem;
     align-items: center;
+    margin-top: 170px;
   }
 
   .mainMessage {
     grid-template-columns: 1fr;
     gap: 2rem;
-    max-width: 90%;
-    margin-left: 0;
+    max-width: 100%;
+    margin-left: 0rem;
     text-align: center;
   }
-
-  .textContainer {
-    text-align: center;
+  .howItWorksTitle {
+    font-size: 2rem;
   }
-
-  .ctaButton {
-    margin-top: 1rem;
-    justify-self: center;
-  }
-
-  .boxContainer {
-    flex-direction: column;
-    gap: 2rem;
-    padding: 1rem;
-  }
-
-  .box {
-    width: 90%;
-    height: auto;
+  
+  .step {
+    min-width: 100%;
   }
 }

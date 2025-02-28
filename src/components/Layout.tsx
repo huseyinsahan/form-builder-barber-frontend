@@ -7,11 +7,9 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
-    <div className={styles.container}>
-      <main className={styles.main}>
-        {children}
-      </main>
-    </div>
+    <main className={styles.main}>
+      {children}
+    </main>
   );
 };
 

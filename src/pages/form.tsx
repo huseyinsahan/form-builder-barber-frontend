@@ -9,7 +9,9 @@ const Form: React.FC = () => {
   const [days, setDays] = useState('');
   const [startTime, setStartTime] = useState('09:00');
   const [endTime, setEndTime] = useState('18:00');
+  const [linkExtension, setLinkExtension] = useState('');
   const [username, setUsername] = useState('defaultUser');
+  const [formLink, setFormLink] = useState('');
   const router = useRouter();
 
   useEffect(() => {
@@ -44,6 +46,7 @@ const Form: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('handleSubmit called'); // Debugging log
     const preferences = names.join(', ');
     const payload = {
       username,
@@ -52,27 +55,39 @@ const Form: React.FC = () => {
       interval: 2,
       start_time: startTime,
       end_time: endTime,
+      link_extension: linkExtension,
       barber_id: 13
     };
 
     console.log('Submitting form with payload:', payload);
 
     try {
-      const response = await fetch('https://form-builder-barber.onrender.com/forms/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      });
+      // Commenting out the actual request for now
+      // const token = localStorage.getItem('token'); // Retrieve the JWT token from local storage
+      // if (!token) {
+      //   console.error('No token found');
+      //   return;
+      // }
 
-      if (response.ok) {
-        console.log('Form submitted successfully');
-        // Handle successful form submission
-      } else {
-        console.error('Form submission failed');
-        // Handle form submission failure
-      }
+      // console.log('Token:', token); // Debugging log
+
+      // const response = await fetch('https://form-builder-barber.onrender.com/forms/create', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     'Authorization': `Bearer ${token}` // Include the JWT token in the request headers
+      //   },
+      //   body: JSON.stringify(payload)
+      // });
+
+      // if (response.ok) {
+      //   const responseData = await response.json();
+      //   console.log('Form submitted successfully');
+      //   setFormLink(responseData.url); // Update the form link state with the generated URL
+      // } else {
+      //   console.error('Form submission failed', await response.text());
+      //   // Handle form submission failure
+      // }
     } catch (error) {
       console.error('Error submitting form:', error);
       // Handle error
@@ -142,8 +157,23 @@ const Form: React.FC = () => {
               className={styles.input}
             />
           </div>
+          <div className={styles.formGroup}>
+            <label>Randevu linkinizin uzantısını giriniz. (Örneğin, BerberAli için linkiniz "www.randevuformu.com/berberali" olacaktır.)</label>
+            <input
+              type="text"
+              value={linkExtension}
+              onChange={(e) => setLinkExtension(e.target.value)}
+              className={styles.input}
+            />
+          </div>
           <button type="submit" className={styles.submitButton}>Submit</button>
         </form>
+        {formLink && (
+          <div className={styles.formGroup}>
+            <label>Randevu formu linkiniz:</label>
+            <p>{formLink}</p>
+          </div>
+        )}
       </main>
     </div>
   );

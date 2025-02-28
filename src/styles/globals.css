@@ -1,9 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap');
 
-
 body {
   font-family: 'Nunito', sans-serif;
 }
+
 html,
 body {
   margin: 0;
@@ -39,4 +39,14 @@ button {
 
 button:hover {
   background-color: #4B0082; /* Darker Purple */
+}
+
+/* Additional styles for main content */
+main {
+  padding: 1rem;
+  
+  margin: 0 auto;
+  background: #FFFFFF; /* White background for main content */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for main content */
+  border-radius: 8px; /* Rounded corners for main content */
 }
