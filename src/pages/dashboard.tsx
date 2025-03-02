@@ -15,7 +15,7 @@ const localizer = momentLocalizer(moment);
 
 const Dashboard: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState<Appointment[]>([]);
   const [view, setView] = useState('week');
   const [date, setDate] = useState(new Date());
   
@@ -38,31 +38,34 @@ const Dashboard: React.FC = () => {
         router.push('/login');
         return;
       }
-
+      
       try {
-        console.log('Fetching appointments with token:', token);
-        const response = await fetch('https://form-builder-barber.onrender.com/dashboard/appointments', {
-          method: 'GET',
+        const response = await fetch('https://form-builder-barber.onrender.com/appointments/user', {
           headers: {
-            'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           }
         });
-          
-        console.log('Response status:', response.status);
+        
         if (response.ok) {
           const data = await response.json();
-          console.log('Fetched appointments:', data);
-          const formattedEvents = data.appointments.map((appointment: any) => {
-            const start = new Date(`${appointment.appointment_date}T${appointment.appointment_time}`);
-            const end = new Date(start.getTime() + 30 * 60000); // Add 30 minutes to start time
-            return {
-              title: `${appointment.name} - ${appointment.barber}`,
-              start,
-              end,
-              ...appointment // Include all appointment details
-            };
-          });
+          const formattedEvents = data.appointments
+            .filter((appointment: any) => !appointment.is_deleted)
+            .map((appointment: any) => {
+              // Format date and time for calendar
+              const dateStr = appointment.appointment_date;
+              const timeStr = appointment.appointment_time;
+              
+              const start = new Date(`${dateStr}T${timeStr}`);
+              const end = new Date(start.getTime() + 30 * 60000); // 30 minutes later
+              
+              return {
+                title: `${appointment.name} - ${appointment.barber}`,
+                start,
+                end,
+                ...appointment // Include all appointment details
+              };
+            });
+            
           setEvents(formattedEvents);
         } else {
           console.error('Failed to fetch appointments');
@@ -71,9 +74,9 @@ const Dashboard: React.FC = () => {
         console.error('Error fetching appointments:', error);
       }
     };
-
+    
     fetchAppointments();
-  }, []);
+  }, [router]);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -105,6 +108,56 @@ const Dashboard: React.FC = () => {
   const closeModal = () => {
     setModalIsOpen(false);
     setSelectedEvent(null);
+  };
+
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const handleDeleteAppointment = async () => {
+    if (!selectedEvent || !selectedEvent.id) {
+      setDeleteError("Randevu bilgileri bulunamadı.");
+      return;
+    }
+
+    setIsDeleting(true);
+    setDeleteError(null);
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        router.push('/login');
+        return;
+      }
+
+      const response = await fetch(`https://form-builder-barber.onrender.com/appointments/delete/${selectedEvent.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        // Update our local events by marking this one as deleted
+        // This approach avoids re-fetching all events from the server
+        setEvents(events.map((event: any) => {
+          if (event.id === selectedEvent.id) {
+            return { ...event, is_deleted: true };
+          }
+          return event;
+        }).filter((event: any) => !event.is_deleted));
+        
+        closeModal();
+      } else {
+        const errorData = await response.json();
+        setDeleteError(errorData.message || "Randevu iptal edilemedi.");
+      }
+    } catch (error) {
+      console.error('Error deleting appointment:', error);
+      setDeleteError("Bir hata oluştu. Lütfen tekrar deneyin.");
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -145,8 +198,9 @@ const Dashboard: React.FC = () => {
           components={{
             toolbar: CustomToolbar
           }}
-          style={{ height: '100%' }}
+          style={{ height: 'calc(100vh - 8rem)' }}
           onSelectEvent={handleEventClick}
+          selectable={false} // Set to false to prevent creating new events
         />
       </main>
       <Modal
@@ -154,8 +208,8 @@ const Dashboard: React.FC = () => {
         onRequestClose={closeModal}
         contentLabel="Appointment Details"
         ariaHideApp={false}
-        className={styles.modal}
-        overlayClassName={styles.overlay}
+        className={styles.modalContent}
+        overlayClassName={styles.modalOverlay}
       >
         {selectedEvent && (
           <div>
@@ -165,7 +219,21 @@ const Dashboard: React.FC = () => {
             <p><strong>Tarih:</strong> {selectedEvent.appointment_date}</p>
             <p><strong>Saat:</strong> {selectedEvent.appointment_time}</p>
             <p><strong>Telefon:</strong> {selectedEvent.phone}</p>
-            <button onClick={closeModal}>Kapat</button>
+            
+            {deleteError && (
+              <div className={styles.errorMessage}>{deleteError}</div>
+            )}
+            
+            <div className={styles.buttonGroup}>
+              <button onClick={closeModal} className={styles.closeButton}>Kapat</button>
+              <button 
+                onClick={handleDeleteAppointment} 
+                className={styles.deleteButton}
+                disabled={isDeleting}
+              >
+                {isDeleting ? 'İptal Ediliyor...' : 'Randevu İptal Et'}
+              </button>
+            </div>
           </div>
         )}
       </Modal>

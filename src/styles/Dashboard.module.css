@@ -1,147 +1,443 @@
 .container {
-    display: flex;
-    height: 100vh;
-    background-color: #F5F5F5;
-  }
-  
-  .sidebar {
-    width: 250px;
-    background-color: #343A40;
-    color: #FFFFFF;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 2rem 1rem;
-    transition: transform 0.3s ease;
-    transform: translateX(0);
-  }
-  
-  .sidebar.open {
-    transform: translateX(0);
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+}
+
+.sidebar {
+  width: 250px;
+  padding: 2rem 1rem;
+  background-color: #2c3e50;
+  color: white;
+  position: fixed;
+  top: 0;
+  left: -250px;
+  height: 100%;
+  transition: left 0.3s ease;
+  z-index: 1001;
+  padding-top: 50px;
+  overflow-y: auto;
+}
+
+.sidebar.open {
+  left: 0;
+}
+
+.closeIcon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.logo {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.navLink {
+  padding: 0.5rem 1rem;
+  color: white;
+  text-decoration: none;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+}
+
+.navLink:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Update mainContent to have proper scrolling */
+.mainContent {
+  flex: 1;
+  padding: 2rem;
+  margin-left: 0;
+  width: 100%;
+  transition: margin-left 0.3s ease;
+  height: 100vh; /* Full viewport height */
+  overflow-y: auto; /* Enable vertical scrolling */
+  z-index: 1;
+  padding-bottom: 60px; /* Add padding at bottom for better visibility */
+}
+
+/* Remove the flex and height constraints that could be causing issues */
+.mainContent > div:last-child {
+  /* Remove the height: calc(100vh - 8rem) !important; line */
+  width: 100%;
+}
+
+/* Update the hamburger menu styles */
+.hamburger {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  width: 40px; /* Increased width */
+  height: 40px; /* Make it square */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Center bars vertically */
+  align-items: center; /* Center bars horizontally */
+  gap: 6px; /* Increased gap between bars */
+  cursor: pointer;
+  z-index: 1000;
+  background-color: #6A0DAD; /* Blue background for better visibility */
+  padding: 8px;
+  border-radius: 5px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3); /* Enhanced shadow */
+}
+
+.bar {
+  width: 100%;
+  height: 3px;
+  background-color: white; /* White bars for contrast */
+  border-radius: 3px; /* Rounded bars */
+  transition: all 0.3s ease; /* Smooth transitions */
+}
+
+/* Add hover effect */
+.hamburger:hover {
+  background-color: #2c3e50; /* Darker blue on hover */
+}
+
+.hamburger:hover .bar {
+  width: 90%; /* Slight animation on hover */
+}
+
+/* Remove any height limitations for the calendar */
+.calendarContainer {
+  margin-top: 20px;
+  width: 100%;
+  min-height: 500px; /* Set a minimum height instead of a calculated one */
+}
+
+/* Modal styles */
+.modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  max-width: 500px;
+  width: 90%;
+}
+
+.modalContent {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 25px; /* Increased padding */
+  border-radius: 8px; /* More rounded corners */
+  max-width: 500px;
+  width: 90%;
+  z-index: 1100;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Improved shadow */
+}
+
+/* Background overlay for modal and sidebar */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1050; /* Higher than other elements */
+}
+
+/* Sidebar overlay */
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+.overlay.visible {
+  display: block;
+}
+
+/* Style the close button */
+.closeButton {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  margin-top: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.closeButton:hover {
+  background-color: #5a6268;
+  transform: translateY(-1px);
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .mainContent {
+    padding: 1rem;
+    padding-top: 60px; /* Space for hamburger menu */
   }
   
   .hamburger {
-    display: none;
-    flex-direction: column;
-    justify-content: space-around;
-    width: 30px;
-    height: 30px;
-    cursor: pointer;
-    margin: 1rem;
-  }
-  
-  .bar {
-    width: 100%;
-    height: 3px;
-    background-color: #343A40;
-    transition: all 0.3s ease;
-  }
-  
-  .closeIcon {
-    display: none;
-    font-size: 2rem;
-    color: #FFFFFF;
-    cursor: pointer;
-    align-self: flex-end;
-    margin-bottom: 1rem;
-  }
-  
-  .logo {
-    font-size: 1.8rem;
-    font-weight: 600;
-    margin-bottom: 2rem;
-    font-family: 'Nunito', sans-serif;
-  }
-  
-  .nav {
     display: flex;
-    flex-direction: column;
-    gap: 1rem;
   }
   
-  .navLink {
-    color: #FFFFFF;
-    text-decoration: none;
-    font-size: 1.2rem;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
+  .calendarContainer {
+    height: calc(100vh - 120px);
   }
-  
-  .navLink:hover {
-    background-color: #6A0DAD;
-  }
-  
-  .mainContent {
-    flex: 1;
-    padding: 2rem;
-    background-color: #FFFFFF;
-    overflow-y: auto;
-  }
-  
-  .formGroup {
-    margin-bottom: 1.5rem;
-  }
-  
-  .inputGroup {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  
-  .input {
-    display: block;
+}
+
+.formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.inputGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.input {
+  display: block;
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.addButton, .removeButton {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  margin-top: 0.5rem;
+  background-color: #6A0DAD;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.submitButton {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: #6A0DAD;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.formLink {
+  color: #0070f3;
+  text-decoration: underline;
+  word-break: break-all;
+  display: inline-block;
+  margin: 5px 0;
+  flex-grow: 1;
+  margin-right: 20px;
+  max-width: 85%;
+}
+
+.formLink:hover {
+  color: #0050a0;
+}
+
+/* Update the forms container styles */
+.userFormsContainer {
+  margin-top: 30px;
+  padding: 20px;
+  border-top: 1px solid #eaeaea;
+  width: 100%;
+  display: block;
+  clear: both;
+}
+
+/* Make sure the form list takes full width */
+.formsList {
+  margin-top: 15px;
+  width: 100%;
+}
+
+.formLinkItem {
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  border-left: 3px solid #0070f3;
+  display: flex;
+  align-items: center;
+}
+
+.formLinkContainer {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f0f7ff;
+  border-radius: 5px;
+  border: 1px solid #d0e3ff;
+}
+
+.linkDisplay {
+  padding: 10px;
+  background-color: white;
+  border-radius: 4px;
+  word-break: break-all;
+}
+
+/* Form deletion styles */
+.formItemContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 20px;
+}
+
+.deleteButton {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  width: 30px;
+  height: 30px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+  margin-left: 15px;
+  flex-shrink: 0;
+  min-width: 30px;
+  padding: 8px 16px;
+  font-weight: bold;
+}
+
+.deleteButton:hover {
+  background-color: #c82333;
+  transform: translateY(-1px);
+}
+
+.deleteButton:disabled {
+  background-color: #e99da3;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.daysSelector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.dayOption {
+  display: flex;
+  align-items: center;
+  background-color: #f5f5f5;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dayOption:hover {
+  background-color: #e8e8e8;
+}
+
+.dayOption input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+.dayOption label {
+  cursor: pointer;
+  font-weight: normal;
+  margin: 0;
+}
+
+.dayOption input[type="checkbox"]:checked + label {
+  font-weight: bold;
+}
+
+/* Improved button group styling */
+.buttonGroup {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  justify-content: flex-end; /* Align buttons to the right */
+  flex-wrap: wrap; /* Allow wrapping on small screens */
+}
+
+/* Make buttons consistent width */
+.buttonGroup button {
+  min-width: 130px; /* Ensure minimum width */
+  padding: 10px 16px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+/* Button group for modal */
+.buttonGroup {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  justify-content: space-between;
+}
+
+/* Style for error message */
+.errorMessage {
+  margin: 15px 0;
+  padding: 10px;
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+/* Improved paragraph styling in modal */
+.modalContent p {
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+/* Media query for small screens */
+@media (max-width: 480px) {
+  .buttonGroup {
+    flex-direction: column-reverse; /* Stack buttons on small screens */
     width: 100%;
-    padding: 0.5rem;
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
   }
   
-  .addButton, .removeButton {
-    display: inline-block;
-    padding: 0.5rem 1rem;
-    margin-top: 0.5rem;
-    background-color: #6A0DAD;
-    color: #FFFFFF;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+  .buttonGroup button {
+    width: 100%; /* Full width on small screens */
+    margin-bottom: 8px;
   }
   
-  .submitButton {
-    display: inline-block;
-    padding: 0.5rem 1rem;
-    background-color: #6A0DAD;
-    color: #FFFFFF;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+  .modalContent {
+    padding: 20px; /* Slightly smaller padding on small screens */
+    width: 95%;
   }
-  
-  @media (max-width: 768px) {
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      height: 100%;
-      transform: translateX(-100%);
-    }
-  
-    .sidebar.open {
-      transform: translateX(0);
-    }
-  
-    .hamburger {
-      display: flex;
-    }
-  
-    .closeIcon {
-      display: block;
-    }
-  
-    .mainContent {
-      padding: 1rem;
-    }
-  }
+}
