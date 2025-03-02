@@ -13,14 +13,41 @@ const Login: React.FC = () => {
     e.preventDefault();
     setError('');
 
-    // Here you would add your login logic
     try {
-      // Example login request
-      // const response = await login(username, password);
-      // If successful, redirect to dashboard
+      // Check if username and password are provided
+      if (!username.trim() || !password.trim()) {
+        setError('Lütfen kullanıcı adı ve şifre giriniz');
+        return;
+      }
+
+      // Make API request to your backend
+      const response = await fetch('https://form-builder-barber.onrender.com/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username,
+          password,
+        }),
+      });
+
+      const data = await response.json();
+
+      // Check if login was successful
+      if (!response.ok) {
+        throw new Error(data.message || 'Giriş başarısız');
+      }
+
+      // Store the token in localStorage
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('username', data.username);
+
+      // Redirect to dashboard
       router.push('/dashboard');
     } catch (err) {
-      setError('Giriş başarısız. Lütfen kullanıcı adı ve şifrenizi kontrol edin.');
+      console.error('Login error:', err);
+      setError(err instanceof Error ? err.message : 'Giriş başarısız. Lütfen kullanıcı adı ve şifrenizi kontrol edin.');
     }
   };
 
