@@ -43,6 +43,31 @@ export default function AppointmentForm({ initialFormData }: AppointmentFormProp
   // API URL - use Render service URL directly
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://form-builder-barber.onrender.com';
   
+  // Process preferences to split comma-separated values
+  const processPreferences = (prefs: string[]): string[] => {
+    if (!Array.isArray(prefs)) return [];
+    
+    // Create a new array to store all individual barbers
+    const processedPrefs: string[] = [];
+    
+    // For each preference in the array
+    prefs.forEach(pref => {
+      // If the preference contains a comma, split it
+      if (pref.includes(',')) {
+        // Split by comma and trim whitespace
+        const splitPrefs = pref.split(',').map(p => p.trim());
+        // Add all split preferences to the result array
+        processedPrefs.push(...splitPrefs);
+      } else {
+        // If no comma, add the preference as is
+        processedPrefs.push(pref.trim());
+      }
+    });
+    
+    // Remove any empty strings and return
+    return processedPrefs.filter(p => p);
+  };
+  
   // Fetch form data when formId is available
   useEffect(() => {
     if (!formId || initialFormData) return;
@@ -63,6 +88,9 @@ export default function AppointmentForm({ initialFormData }: AppointmentFormProp
           data.preferences = [];
         }
         
+        // Process the preferences to handle comma-separated values
+        data.preferences = processPreferences(data.preferences);
+        
         setForm(data);
         
         // Auto-select first barber if available
@@ -81,9 +109,18 @@ export default function AppointmentForm({ initialFormData }: AppointmentFormProp
     fetchFormData();
   }, [formId, initialFormData, API_URL]);
   
-  // Fetch available slots when barber is selected
+  // Fetch available slots when form is loaded or barber is selected
   useEffect(() => {
-    if (!formId || !selectedBarber || !form) return;
+    if (!form) return;
+    
+    // If selectedBarber is empty but we have preferences, auto-select the first one
+    if (!selectedBarber && form.preferences && form.preferences.length > 0) {
+      setSelectedBarber(form.preferences[0]);
+      return; // Return here as the state update will trigger this effect again
+    }
+    
+    // Only proceed if we have both form and selectedBarber
+    if (!selectedBarber) return;
     
     const fetchAvailableSlots = async (): Promise<void> => {
       try {
@@ -110,7 +147,7 @@ export default function AppointmentForm({ initialFormData }: AppointmentFormProp
     };
     
     fetchAvailableSlots();
-  }, [formId, selectedBarber, form, API_URL]);
+  }, [form, selectedBarber, API_URL]);
   
   // Format date (YYYY-MM-DD to DD.MM.YYYY)
   const formatDate = (dateStr: string): string => {
@@ -391,6 +428,33 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     if (!Array.isArray(formData.preferences)) {
       formData.preferences = [];
     }
+    
+    // Process the preferences to handle comma-separated values
+    const processPreferences = (prefs: string[]): string[] => {
+      if (!Array.isArray(prefs)) return [];
+      
+      // Create a new array to store all individual barbers
+      const processedPrefs: string[] = [];
+      
+      // For each preference in the array
+      prefs.forEach(pref => {
+        // If the preference contains a comma, split it
+        if (pref.includes(',')) {
+          // Split by comma and trim whitespace
+          const splitPrefs = pref.split(',').map(p => p.trim());
+          // Add all split preferences to the result array
+          processedPrefs.push(...splitPrefs);
+        } else {
+          // If no comma, add the preference as is
+          processedPrefs.push(pref.trim());
+        }
+      });
+      
+      // Remove any empty strings and return
+      return processedPrefs.filter(p => p);
+    };
+    
+    formData.preferences = processPreferences(formData.preferences);
     
     return {
       props: {
