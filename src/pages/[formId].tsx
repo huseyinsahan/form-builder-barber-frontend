@@ -57,6 +57,12 @@ export default function AppointmentForm({ initialFormData }: AppointmentFormProp
         }
         
         const data: FormData = await response.json();
+        
+        // Ensure preferences is an array
+        if (!Array.isArray(data.preferences)) {
+          data.preferences = [];
+        }
+        
         setForm(data);
         
         // Auto-select first barber if available
@@ -380,6 +386,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
     
     const formData = await response.json();
+    
+    // Ensure preferences is an array
+    if (!Array.isArray(formData.preferences)) {
+      formData.preferences = [];
+    }
     
     return {
       props: {
