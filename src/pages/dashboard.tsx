@@ -25,7 +25,7 @@ const Dashboard: React.FC = () => {
     appointment_date: string;
     appointment_time: string;
     phone: string;
-    [key: string]: any; // Add this line to include any other properties
+    [key: string]: any; // Add this line to include any other properties 
   }
 
   const [selectedEvent, setSelectedEvent] = useState<Appointment | null>(null);
@@ -192,7 +192,7 @@ const Dashboard: React.FC = () => {
           step={30}
           timeslots={2}
           min={new Date(1970, 1, 1, 8, 0, 0)}
-          max={new Date(1970, 1, 1, 17, 0, 0)}
+          max={new Date(1970, 1, 1, 20, 0, 0)}
           date={date}
           onNavigate={setDate}
           components={{
