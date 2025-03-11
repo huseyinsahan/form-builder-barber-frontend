@@ -340,7 +340,7 @@ export default function AppointmentForm({ initialFormData }: AppointmentFormProp
           
           {form.preferences && form.preferences.length > 0 && (
             <div className={styles.formSection}>
-              <label htmlFor="preferences">Berber Seçin:</label>
+              <label htmlFor="preferences">Danışman Seçin:</label>
               <select 
                 id="preferences" 
                 value={selectedBarber}
