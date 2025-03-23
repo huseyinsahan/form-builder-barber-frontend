@@ -18,6 +18,7 @@ const Dashboard: React.FC = () => {
   const [events, setEvents] = useState<Appointment[]>([]);
   const [view, setView] = useState('week');
   const [date, setDate] = useState(new Date());
+  const [preferences, setPreferences] = useState<string[]>([]);
   
   interface Appointment {
     name: string;
@@ -51,12 +52,9 @@ const Dashboard: React.FC = () => {
           const formattedEvents = data.appointments
             .filter((appointment: any) => !appointment.is_deleted)
             .map((appointment: any) => {
-              // Format date and time for calendar
-              const dateStr = appointment.appointment_date;
-              const timeStr = appointment.appointment_time;
-              
-              const start = new Date(`${dateStr}T${timeStr}`);
-              const end = new Date(start.getTime() + 30 * 60000); // 30 minutes later
+              // Use start and end times directly from the database
+              const start = new Date(`${appointment.appointment_date}T${appointment.appointment_time}`);
+              const end = new Date(`${appointment.appointment_date}T${appointment.appointment_time_end}`);
               
               return {
                 title: `${appointment.name} - ${appointment.barber}`,
@@ -77,6 +75,36 @@ const Dashboard: React.FC = () => {
     
     fetchAppointments();
   }, [router]);
+
+  useEffect(() => {
+    fetchFormDetails();
+  }, []);
+
+  const fetchFormDetails = async () => {
+    const token = localStorage.getItem('token');
+    const username = localStorage.getItem('username');
+    
+    if (!token || !username) return;
+  
+    try {
+      const response = await fetch('https://form-builder-barber.onrender.com/forms/get/abb', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+  
+      if (response.ok) {
+        const formData = await response.json();
+        // Process preferences if they're comma-separated
+        const prefsArray = Array.isArray(formData.preferences) 
+          ? formData.preferences 
+          : formData.preferences.split(',').map((p: string) => p.trim());
+        setPreferences(prefsArray);
+      }
+    } catch (error) {
+      console.error('Error fetching form details:', error);
+    }
+  };
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -160,6 +188,68 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const handleSelectSlot = (slotInfo: { start: Date; end: Date }) => {
+    setSelectedEvent({
+      start: slotInfo.start,
+      end: slotInfo.end,
+      name: '',
+      barber: '',
+      phone: '',
+      appointment_date: moment(slotInfo.start).format('YYYY-MM-DD'),
+      appointment_time: moment(slotInfo.start).format('HH:mm'),
+      appointment_time_end: moment(slotInfo.end).format('HH:mm'),
+    });
+    setModalIsOpen(true);
+  };
+
+  const handleCreateAppointment = async () => {
+    if (!selectedEvent) return;
+
+    const token = localStorage.getItem('token');
+    const username = localStorage.getItem('username');
+    
+    if (!token || !username) {
+      router.push('/login');
+      return;
+    }
+  
+    try {
+      const response = await fetch('https://form-builder-barber.onrender.com/appointments/book/abb', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: selectedEvent.name,
+          barber: selectedEvent.barber,
+          phone: selectedEvent.phone,
+          appointment_date: selectedEvent.appointment_date,
+          appointment_time: selectedEvent.appointment_time,
+          appointment_time_end: selectedEvent.appointment_time_end,
+          preferences: selectedEvent.barber // Add this line to match backend expectations
+        }),
+      });
+  
+      if (response.ok) {
+        const newAppointment = await response.json();
+        setEvents(prevEvents => [...prevEvents, {
+          ...newAppointment.appointment,
+          title: `${newAppointment.appointment.name} - ${newAppointment.appointment.barber}`,
+          start: new Date(`${newAppointment.appointment.appointment_date}T${newAppointment.appointment.appointment_time}`),
+          end: new Date(`${newAppointment.appointment.appointment_date}T${newAppointment.appointment.appointment_time_end}`),
+        }]);
+        closeModal();
+      } else {
+        const errorData = await response.json();
+        alert(errorData.message || 'Randevu oluşturulamadı');
+      }
+    } catch (error) {
+      console.error('Error creating appointment:', error);
+      alert('Bir hata oluştu. Lütfen tekrar deneyin.');
+    }
+  };
+
   return (
     <div className={styles.container}>
       <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.open : ''}`}>
@@ -200,7 +290,8 @@ const Dashboard: React.FC = () => {
           }}
           style={{ height: 'calc(100vh - 8rem)' }}
           onSelectEvent={handleEventClick}
-          selectable={false} // Set to false to prevent creating new events
+          onSelectSlot={handleSelectSlot} // Add this line
+          selectable={true} // Enable slot selection
         />
       </main>
       <Modal
@@ -213,26 +304,75 @@ const Dashboard: React.FC = () => {
       >
         {selectedEvent && (
           <div>
-            <h2>Randevu Detayı</h2>
-            <p><strong>İsim:</strong> {selectedEvent.name}</p>
-            <p><strong>Danışman:</strong> {selectedEvent.barber}</p>
-            <p><strong>Tarih:</strong> {selectedEvent.appointment_date}</p>
-            <p><strong>Saat:</strong> {selectedEvent.appointment_time}</p>
-            <p><strong>Telefon:</strong> {selectedEvent.phone}</p>
-            
-            {deleteError && (
-              <div className={styles.errorMessage}>{deleteError}</div>
-            )}
-            
+            <div className={styles.modalHeader}>
+              <h2>{selectedEvent.id ? 'Randevu Detayı' : 'Yeni Randevu Oluştur'}</h2>
+            </div>
+            <div className={styles.formGroup}>
+              <p><strong>Tarih:</strong> {moment(selectedEvent.appointment_date).format('DD MMMM YYYY')}</p>
+              <p><strong>Başlangıç Saati:</strong> {moment(selectedEvent.appointment_time, 'HH:mm').format('HH:mm')}</p>
+              <p><strong>Bitiş Saati:</strong> {moment(selectedEvent.appointment_time_end, 'HH:mm').format('HH:mm')}</p>
+            </div>
+
+            {/* Show details for both new and existing appointments */}
+            <div className={styles.formGroup}>
+              <label>İsim:</label>
+              <input
+                type="text"
+                value={selectedEvent.name}
+                onChange={(e) => setSelectedEvent({ ...selectedEvent, name: e.target.value })}
+                placeholder="Müşteri adı"
+                readOnly={!!selectedEvent.id} // Make readonly if it's an existing appointment
+                className={selectedEvent.id ? styles.readOnlyInput : ''}
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label>Danışman:</label>
+              <select
+                value={selectedEvent.barber}
+                onChange={(e) => setSelectedEvent({ ...selectedEvent, barber: e.target.value })}
+                disabled={!!selectedEvent.id}
+                className={selectedEvent.id ? styles.readOnlyInput : ''}
+              >
+                <option value="">Danışman Seçin</option>
+                {preferences.map((barber) => (
+                  <option key={barber} value={barber}>
+                    {barber}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className={styles.formGroup}>
+              <label>Telefon:</label>
+              <input
+                type="tel"
+                value={selectedEvent.phone}
+                onChange={(e) => setSelectedEvent({ ...selectedEvent, phone: e.target.value })}
+                placeholder="05XX XXX XX XX"
+                readOnly={!!selectedEvent.id}
+                className={selectedEvent.id ? styles.readOnlyInput : ''}
+              />
+            </div>
+            {deleteError && <div className={styles.errorMessage}>{deleteError}</div>}
             <div className={styles.buttonGroup}>
               <button onClick={closeModal} className={styles.closeButton}>Kapat</button>
-              <button 
-                onClick={handleDeleteAppointment} 
-                className={styles.deleteButton}
-                disabled={isDeleting}
-              >
-                {isDeleting ? 'İptal Ediliyor...' : 'Randevu İptal Et'}
-              </button>
+              {!selectedEvent.id && (
+                <button 
+                  onClick={handleCreateAppointment} 
+                  className={styles.createButton}
+                  disabled={!selectedEvent.name || !selectedEvent.barber || !selectedEvent.phone}
+                >
+                  Randevu Oluştur
+                </button>
+              )}
+              {selectedEvent.id && (
+                <button
+                  onClick={handleDeleteAppointment}
+                  className={styles.deleteButton}
+                  disabled={isDeleting}
+                >
+                  {isDeleting ? 'İptal Ediliyor...' : 'Randevu İptal Et'}
+                </button>
+              )}
             </div>
           </div>
         )}

@@ -133,16 +133,26 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  right: auto;
-  bottom: auto;
   transform: translate(-50%, -50%);
-  background-color: white;
-  padding: 25px; /* Increased padding */
-  border-radius: 8px; /* More rounded corners */
-  max-width: 500px;
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   width: 90%;
-  z-index: 1100;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Improved shadow */
+  max-width: 500px;
+  outline: none;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* Background overlay for modal and sidebar */
@@ -381,30 +391,57 @@
 /* Improved button group styling */
 .buttonGroup {
   display: flex;
-  gap: 12px;
-  margin-top: 20px;
-  justify-content: flex-end; /* Align buttons to the right */
-  flex-wrap: wrap; /* Allow wrapping on small screens */
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  width: 100%;
 }
 
-/* Make buttons consistent width */
 .buttonGroup button {
-  min-width: 130px; /* Ensure minimum width */
-  padding: 10px 16px;
-  font-size: 14px;
-  border-radius: 4px;
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.2s;
   border: none;
   cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.2s, transform 0.1s;
+  text-align: center;
+  min-width: 120px;
+}
+
+.closeButton {
+  background-color: #e9ecef;
+  color: #495057;
+}
+
+.deleteButton {
+  background-color: #dc3545;
+  color: white;
+}
+
+.createButton {
+  background-color: #28a745;
+  color: white;
+}
+
+.closeButton:hover { background-color: #dee2e6; }
+.deleteButton:hover { background-color: #c82333; }
+.createButton:hover { background-color: #218838; }
+
+.closeButton:disabled,
+.deleteButton:disabled,
+.createButton:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
 }
 
 /* Button group for modal */
 .buttonGroup {
   display: flex;
-  gap: 10px;
-  margin-top: 20px;
-  justify-content: space-between;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
 }
 
 /* Style for error message */
@@ -440,4 +477,99 @@
     padding: 20px; /* Slightly smaller padding on small screens */
     width: 95%;
   }
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.formGroup input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.formGroup input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.formGroup select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  background-color: white;
+}
+
+.formGroup select:disabled {
+  background-color: #f8f9fa;
+  cursor: not-allowed;
+}
+
+.formGroup select:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.closeButton,
+.createButton,
+.deleteButton {
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.2s;
+  border: none;
+  cursor: pointer;
+}
+
+.closeButton {
+  background-color: #e9ecef;
+  color: #495057;
+}
+
+.createButton {
+  background-color: #28a745;
+  color: white;
+}
+
+.deleteButton {
+  background-color: #dc3545;
+  color: white;
+}
+
+.closeButton:hover { background-color: #dee2e6; }
+.createButton:hover { background-color: #218838; }
+.deleteButton:hover { background-color: #c82333; }
+
+.modalHeader {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.modalHeader h2 {
+  margin: 0;
+  color: #212529;
+  font-size: 1.5rem;
+}
+
+.readOnlyInput {
+  background-color: #f8f9fa;
+  cursor: not-allowed;
+  border: 1px solid #dee2e6;
+}
+
+.readOnlyInput:focus {
+  border-color: #dee2e6;
+  box-shadow: none;
 }

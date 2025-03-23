@@ -11,8 +11,13 @@ interface FormData {
   preferences: string[];
 }
 
+interface TimeSlot {
+  start: string;
+  end: string;
+}
+
 interface AvailableSlots {
-  [date: string]: string[];
+  [date: string]: TimeSlot[];
 }
 
 interface AppointmentFormProps {
@@ -38,6 +43,7 @@ export default function AppointmentForm({ initialFormData }: AppointmentFormProp
   const [availableSlots, setAvailableSlots] = useState<AvailableSlots>({});
   const [appointmentDate, setAppointmentDate] = useState<string>('');
   const [appointmentTime, setAppointmentTime] = useState<string>('');
+  const [appointmentTimeEnd, setAppointmentTimeEnd] = useState<string>('');
   const [confirmationMessage, setConfirmationMessage] = useState<ConfirmationMessage>({ text: '', type: '' });
   
   // API URL - use Render service URL directly
@@ -230,11 +236,12 @@ export default function AppointmentForm({ initialFormData }: AppointmentFormProp
       preferences: selectedBarber,
       appointment_date: appointmentDate,
       appointment_time: appointmentTime,
+      appointment_time_end: appointmentTimeEnd,
       form_id: form?.id
     };
     
     // Add a confirmation dialog in Turkish
-    if (!confirm(`${formatDate(formData.appointment_date)} tarihinde saat ${formData.appointment_time} için randevu onaylanacak. Onaylıyor musunuz?`)) {
+    if (!confirm(`${formatDate(formData.appointment_date)} tarihinde saat ${formData.appointment_time} - ${formData.appointment_time_end} için randevu onaylanacak. Onaylıyor musunuz?`)) {
       return;
     }
     
@@ -255,7 +262,7 @@ export default function AppointmentForm({ initialFormData }: AppointmentFormProp
       }
       
       setConfirmationMessage({
-        text: `${formatDate(formData.appointment_date)} tarihinde saat ${formData.appointment_time} için randevunuz onaylandı.`,
+        text: `${formatDate(formData.appointment_date)} tarihinde saat ${formData.appointment_time} - ${formData.appointment_time_end} için randevunuz onaylandı.`,
         type: 'success'
       });
       
@@ -284,6 +291,15 @@ export default function AppointmentForm({ initialFormData }: AppointmentFormProp
     // Allow only digits, spaces, and parentheses
     const value = e.target.value.replace(/[^\d\s()]/g, '');
     setPhone(value);
+  };
+
+  // First, add these helper functions at the component level
+  const getAvailableDates = (): string[] => {
+    return Object.keys(availableSlots).sort();
+  };
+
+  const getAvailableTimesForDate = (date: string): TimeSlot[] => {
+    return availableSlots[date] || [];
   };
   
   if (loading && !form) return (
@@ -355,36 +371,56 @@ export default function AppointmentForm({ initialFormData }: AppointmentFormProp
           )}
           
           <div className={styles.formSection}>
-            <label>Tarih ve Saat Seçin:</label>
-            
+            <label>Randevu Tarihi ve Saati:</label>
             {loadingSlots ? (
               <div className={styles.loading}>
                 <div className={styles.loadingSpinner}></div>
                 <p>Müsait randevu saatleri yükleniyor...</p>
               </div>
             ) : (
-              <div className={styles.slots}>
-                {Object.entries(availableSlots).map(([date, slots]) => (
-                  <div key={date} className={styles.dateSection}>
-                    <strong>
-                      {formatDate(date)} - {getTurkishDayName(date)}
-                    </strong>
-                    <div className={styles.slotsContainer}>
-                      {slots.map((slot) => (
-                        <span 
-                          key={`${date}-${slot}`}
-                          className={`
-                            ${styles.slot} 
-                            ${appointmentDate === date && appointmentTime === slot ? styles.active : ''}
-                          `}
-                          onClick={() => selectSlot(date, slot)}
-                        >
-                          {slot}
-                        </span>
+              <div className={styles.dateTimeSelectors}>
+                <div className={styles.selectWrapper}>
+                  <label htmlFor="dateSelect">Tarih:</label>
+                  <select
+                    id="dateSelect"
+                    value={appointmentDate}
+                    onChange={(e) => {
+                      setAppointmentDate(e.target.value);
+                      setAppointmentTime(''); // Reset time when date changes
+                    }}
+                    required
+                  >
+                    <option value="">Tarih Seçin</option>
+                    {getAvailableDates().map((date) => (
+                      <option key={date} value={date}>
+                        {formatDate(date)} - {getTurkishDayName(date)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {appointmentDate && (
+                  <div className={styles.selectWrapper}>
+                    <label htmlFor="timeSelect">Saat:</label>
+                    <select
+                      id="timeSelect"
+                      value={`${appointmentTime}-${appointmentTimeEnd}`}
+                      onChange={(e) => {
+                        const [start, end] = e.target.value.split('-');
+                        setAppointmentTime(start);
+                        setAppointmentTimeEnd(end);
+                      }}
+                      required
+                    >
+                      <option value="">Saat Seçin</option>
+                      {getAvailableTimesForDate(appointmentDate).map((slot) => (
+                        <option key={`${slot.start}-${slot.end}`} value={`${slot.start}-${slot.end}`}>
+                          {slot.start} - {slot.end}
+                        </option>
                       ))}
-                    </div>
+                    </select>
                   </div>
-                ))}
+                )}
               </div>
             )}
           </div>
